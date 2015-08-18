@@ -1,0 +1,60 @@
+BEGIN;
+BEGIN
+select
+	c_custkey,
+	c_name,
+	sum(l_extendedprice * (1 - l_discount)) as revenue,
+	c_acctbal,
+	n_name,
+	c_address,
+	c_phone,
+	c_comment
+from
+	customer,
+	orders,
+	lineitem,
+	nation
+where
+	c_custkey = o_custkey
+	and l_orderkey = o_orderkey
+	and o_orderdate >= date '1993-07-01'
+	and o_orderdate < cast(date '1993-07-01' + interval '3 month' as date)
+	and l_returnflag = 'R'
+	and c_nationkey = n_nationkey
+group by
+	c_custkey,
+	c_name,
+	c_acctbal,
+	c_phone,
+	n_name,
+	c_address,
+	c_comment
+order by
+	revenue desc
+LIMIT 20;
+ c_custkey |       c_name       |     revenue      | c_acctbal |          n_name           |                c_address                 |     c_phone     |                                                      c_comment                                                       
+-----------+--------------------+------------------+-----------+---------------------------+------------------------------------------+-----------------+----------------------------------------------------------------------------------------------------------------------
+   8728522 | Customer#008728522 | 823313.056677316 |    874.35 | ROMANIA                   | lFBNuGHP6WS2YTX9OUBghvzkoFk              | 29-800-823-6539 |  carefully alongside of the final foxes? carefully regular requests above the bold, final inst
+   2836234 | Customer#002836234 | 822466.733946159 |   2735.79 | CANADA                    | JDykcIqKjBJFc9azC tQq,aWDx               | 13-190-946-5925 | ven, regular packages wake pinto beans. carefully special dolphins print furiously blith
+  13645609 | Customer#013645609 | 821270.531546927 |   9741.69 | MOROCCO                   | In58FgVgVLwtJJkr                         | 25-508-461-1868 | en hockey players. requests cajole quickly express deposits. express, ironic requests haggle blithely. regul
+   2371261 | Customer#002371261 | 804213.512654479 |   4429.11 | INDONESIA                 | XdXSETmIBxuafhXl14AiDk                   | 19-531-284-8699 |  blithely express deposits along the blithely final f
+   2820532 | Customer#002820532 | 795078.197393155 |    7502.7 | INDIA                     | NdsqI2s CVc                              | 18-992-171-1003 | ven deposits detect quickly against the quickly regular waters. blithely ironic dugouts sleep always against the
+  13027789 | Customer#013027789 | 794188.543814252 |   5512.73 | SAUDI ARABIA              | HZRNiMP44FS2XekKvhVutDx8pX75TdKR         | 30-388-944-3331 | ly above the even packages? slyly regular packages haggle slyly regular accounts. slyly pending packages nag along t
+  10050748 | Customer#010050748 | 791246.965156459 |   8740.33 | PERU                      | R6riMKLxctXW1R4dgxR8Nk mAPvct9vtNXhrprCN | 27-653-112-9932 | times ironic accounts. carefully unusual deposits along the slyly
+   2038411 | Customer#002038411 | 789015.369731323 |    6185.5 | ROMANIA                   | 58MtMXSYf0uCD1xKSjhPA,gUIqDCtpNPy        | 29-816-540-6332 | lly about the slyly regular deposits. slyly regular pinto beans are blithely according to the furiously even pa
+  12667315 | Customer#012667315 | 788785.393944001 |   7678.64 | BRAZIL                    | 0vjju LJxvlWhZi8DKlxGafelta              | 12-653-299-3515 | st carefully slyly unusual deposits. car
+   1495711 | Customer#001495711 | 788329.873145872 |   4606.53 | ARGENTINA                 | ,qaeBduMih78MYoUi5L4TUvZJdZmHuB3         | 11-851-476-5283 | nic accounts haggle furiously; fluffily regular requests among the blithely ironic accounts cajole b
+   6535846 | Customer#006535846 | 786958.023354495 |   5466.28 | FRANCE                    | fr6YJbtpyKXhWaNU3                        | 16-777-918-6437 | lyly blithe deposits. instructions are furi
+   2433142 | Customer#002433142 | 783345.143060954 |   7020.83 | ALGERIA                   | 8Noo6GshkJ                               | 10-483-890-7322 | uriously careful excuses. furiously even instructions are blithely ab
+   9256810 | Customer#009256810 | 781737.061561203 |   3611.46 | BRAZIL                    | OkWWx7sfo0sHqZthCakN,1bKdiwPUuMf6by      | 12-142-536-4795 |  pinto beans integrate. deposits nag alongside of the final instructions. quickly final accounts was furiously
+  14402689 | Customer#014402689 | 779367.169709226 |   5139.23 | JORDAN                    | zS7vnVM8bJNh                             | 23-327-705-5533 | ions. quickly ironic instructions are furiously ab
+  14916811 | Customer#014916811 | 767156.373187427 |    906.16 | ARGENTINA                 | AturwvrBsf,2TKvWDk                       | 11-444-280-5869 | g the slyly regular accounts. quickl
+   6851086 | Customer#006851086 | 763879.446841637 |   3530.48 | MOZAMBIQUE                | Rpb3saFJC6oNZdG0iu                       | 26-235-980-1434 | ourts use furiously across the furiously final forg
+   7543351 | Customer#007543351 | 763003.711314828 |   2286.72 | GERMANY                   | d2NVKX2wEQ22xuAwxpPLnWGqgq               | 17-997-642-3079 |  slyly slow platelets wake slyly about the unusual grouches.
+  10381102 | Customer#010381102 | 751751.973296923 |   4864.63 | GERMANY                   | u8Yb4h0SyvN                              | 17-799-615-9076 | ng to the ironic, brave ideas. theodolites mold furiously. carefully ironic pack
+   6914197 | Customer#006914197 | 750801.775319613 |   -243.46 | ALGERIA                   | LS5QUBhOoA rg1kJ                         | 10-152-395-9104 | ts. quiet excuses above the furiously ironic packages nag slyly express escapade
+  11420197 | Customer#011420197 | 748690.739764417 |   8582.47 | JORDAN                    | MxGkmnQJNgbaYDVq0TkpwsM,T99OhO6Yyd7R     | 23-529-172-4931 | blithely pending packages are quickly. busy, even escapades about the sometimes special deposits wake furio
+(20 rows)
+
+COMMIT;
+COMMIT

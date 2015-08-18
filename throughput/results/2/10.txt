@@ -1,0 +1,60 @@
+BEGIN;
+BEGIN
+select
+	c_custkey,
+	c_name,
+	sum(l_extendedprice * (1 - l_discount)) as revenue,
+	c_acctbal,
+	n_name,
+	c_address,
+	c_phone,
+	c_comment
+from
+	customer,
+	orders,
+	lineitem,
+	nation
+where
+	c_custkey = o_custkey
+	and l_orderkey = o_orderkey
+	and o_orderdate >= date '1995-01-01'
+	and o_orderdate < cast(date '1995-01-01' + interval '3 month' as date)
+	and l_returnflag = 'R'
+	and c_nationkey = n_nationkey
+group by
+	c_custkey,
+	c_name,
+	c_acctbal,
+	c_phone,
+	n_name,
+	c_address,
+	c_comment
+order by
+	revenue desc
+LIMIT 20;
+ c_custkey |       c_name       |     revenue      | c_acctbal |          n_name           |               c_address                |     c_phone     |                                                      c_comment                                                      
+-----------+--------------------+------------------+-----------+---------------------------+----------------------------------------+-----------------+---------------------------------------------------------------------------------------------------------------------
+   4832428 | Customer#004832428 | 819766.893657357 |   7862.28 | ARGENTINA                 | ,9V4cTki4taO DgWAPnfc                  | 11-266-795-5569 | ependencies. slyly even ideas cajole silently tith
+   4204018 | Customer#004204018 | 803221.187002023 |     638.3 | VIETNAM                   | 7u34cqikGX2zIsjQ69YoUPsywc 40          | 31-505-147-1139 |  slyly ironic deposits. quickly final ideas are fluffily. slyly
+  13440796 | Customer#013440796 | 803126.602456499 |    388.92 | ALGERIA                   | uFtxD8XVPGcH0                          | 10-174-591-1065 | y regular accounts along the slyly ironic instructions gr
+  10799443 | Customer#010799443 | 796012.121016537 |   2332.55 | IRAQ                      | wQoXUNm7uxyyHtGB                       | 21-299-962-9574 | riously even theodolites sleep blithely regular packages. furiously silent asymptotes haggle quickly. cl
+  14204587 | Customer#014204587 | 787335.965497307 |   4819.47 | IRAQ                      | TQPowi4KsnuX9cWrwB7QQT9hvazEWhiQbs7Xl  | 21-265-121-8009 | gular requests cajole ironic packages. quickly ironic requests should have to caj
+  12246433 | Customer#012246433 | 781141.239042964 |   8768.88 | EGYPT                     | r2 l2Y1RFHef                           | 14-322-999-3534 | ing to the blithely even packages maintain blithely special deposits. ironic ideas sleep furiously ac
+   8904235 | Customer#008904235 | 749452.451004476 |   7423.43 | MOZAMBIQUE                | ViAUkDx4MtR5nr                         | 26-666-332-5730 | olites about the packages nag during the pending packages. ironic, bold instructions sleep agains
+   4782787 | Customer#004782787 | 743931.154136964 |   3667.62 | VIETNAM                   | zOqQtXyjiSpAUaD3                       | 31-231-666-1022 | ironic requests. slyly ironic theodolites might cajole slyly. special
+   8777365 | Customer#008777365 | 738036.519192115 |    506.31 | INDONESIA                 | 1UJptEJYDgxHvFQVTyEFzrd94y9WAenq2g9I   | 19-319-741-1633 | onic ideas sleep furiously silent instructions. packages affix blithely above the slyly specia
+   5023144 | Customer#005023144 | 720228.739201544 |   -263.93 | RUSSIA                    | xGF3kF96Ye,fgqen0ixgkOo,jBG7aGqt8CJTKv | 32-656-519-4221 | ckages sleep furiously carefully ironic foxes. blithely regular requests affix slyly. bold deposits caj
+   4907047 | Customer#004907047 | 708858.486737025 |   2458.36 | KENYA                     | zGYnsgGQ6pFzIUi5eIFMmy996J8oC          | 24-530-476-5084 | lent foxes wake furiously furiously regular patterns. quickly pe
+   7219702 | Customer#007219702 | 707240.354135975 |    8055.3 | UNITED KINGDOM            | H8fVW8fLsVcKh,k5wYaQyCLsheNr           | 33-986-397-5662 | ep fluffily across the quickly busy packages. blithely special accounts use carefully about the regular as
+   7632337 | Customer#007632337 | 701860.248229437 |   -112.45 | IRAQ                      | Z1FRWiTFneapwYEAwG5                    | 21-193-881-6775 |  ironic deposits are blithely at the slyly regular accounts. blithely final requests are above 
+   1411036 | Customer#001411036 | 699771.164116225 |   4280.01 | BRAZIL                    | avyVZ QxRZBZTKxOGVrCpD0gkbwG           | 12-605-540-5807 |  blithely above the carefully pending theodolites. theodol
+  10423258 | Customer#010423258 | 696987.916602433 |   8205.42 | SAUDI ARABIA              | cmlB0gCOKiCV4r8LA                      | 30-414-191-4679 | ccording to the furiously regular theodolites. furiously bold requests promise. carefully final accounts slee
+   1597804 | Customer#001597804 | 696096.438421603 |   1853.89 | MOZAMBIQUE                | awkOFkO5dbA                            | 26-336-369-1848 | deposits. special courts wake blithely before the sometimes bold deposits. slyly even deposits are s
+   7722559 | Customer#007722559 | 690133.374040143 |   5183.95 | INDIA                     | 7A5Z11iiGnAJQdDM5qoa lsGfwVuupuqj8ki   | 18-966-500-4136 |  packages. express excuses sleep. fu
+  14346685 | Customer#014346685 | 687425.458429965 |   8877.07 | EGYPT                     | GnnWv7o6RuYey4hBh1VY aM fBgbG0gELpav   | 14-781-611-8827 | bout the unusual requests. accounts are slyly even requests. final, final theodolites are carefully. even sentiment
+   7494238 | Customer#007494238 | 687233.141153201 |   4086.69 | UNITED KINGDOM            | tdSRfCkFsgVD6JmF2vhAMHMJi,qxYU1        | 33-705-531-8524 | p the quickly regular accounts. furious
+   5242219 | Customer#005242219 | 681043.321019463 |   3224.82 | MOZAMBIQUE                | yah TbkynXY9tP8Z0vk7wAQskat9Xw         | 26-347-845-8113 | s nag. express requests cajol
+(20 rows)
+
+COMMIT;
+COMMIT

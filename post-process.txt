@@ -1,0 +1,2 @@
+/usr/local/bin/dbt3-throughput-score: line 46: bc: command not found
+/usr/local/bin/dbt3-post-process: line 94: bc: command not found

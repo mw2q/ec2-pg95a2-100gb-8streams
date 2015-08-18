@@ -1,0 +1,85 @@
+BEGIN;
+BEGIN
+EXPLAIN
+select
+	o_year,
+	sum(case
+		when nation = 'CHINA' then volume
+		else 0
+	end) / sum(volume) as mkt_share
+from
+	(
+		select
+			extract(year from o_orderdate) as o_year,
+			l_extendedprice * (1 - l_discount) as volume,
+			n2.n_name as nation
+		from
+			part,
+			supplier,
+			lineitem,
+			orders,
+			customer,
+			nation n1,
+			nation n2,
+			region
+		where
+			p_partkey = l_partkey
+			and s_suppkey = l_suppkey
+			and l_orderkey = o_orderkey
+			and o_custkey = c_custkey
+			and c_nationkey = n1.n_nationkey
+			and n1.n_regionkey = r_regionkey
+			and r_name = 'ASIA'
+			and s_nationkey = n2.n_nationkey
+			and o_orderdate between date '1995-01-01' and date '1996-12-31'
+			and p_type = 'PROMO BURNISHED NICKEL'
+	) as all_nations
+group by
+	o_year
+order by
+	o_year;
+                                                                      QUERY PLAN                                                                      
+------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=21370189.27..21370191.09 rows=725 width=38)
+   Sort Key: (date_part('year'::text, (orders.o_orderdate)::timestamp without time zone))
+   ->  HashAggregate  (cost=21370142.14..21370154.83 rows=725 width=38)
+         Group Key: date_part('year'::text, (orders.o_orderdate)::timestamp without time zone)
+         ->  Hash Join  (cost=5328057.68..21365326.60 rows=240777 width=38)
+               Hash Cond: (supplier.s_nationkey = n2.n_nationkey)
+               ->  Hash Join  (cost=5328056.12..21360810.47 rows=240777 width=16)
+                     Hash Cond: (lineitem.l_suppkey = supplier.s_suppkey)
+                     ->  Hash Join  (cost=5283760.12..21313203.79 rows=240777 width=16)
+                           Hash Cond: (lineitem.l_orderkey = orders.o_orderkey)
+                           ->  Nested Loop  (cost=4106.48..15976138.84 rows=4000257 width=16)
+                                 ->  Bitmap Heap Scan on part  (cost=4105.90..281174.11 rows=133334 width=4)
+                                       Recheck Cond: ((p_type)::text = 'PROMO BURNISHED NICKEL'::text)
+                                       ->  Bitmap Index Scan on part_p_type_p_partkey_idx  (cost=0.00..4072.57 rows=133334 width=0)
+                                             Index Cond: ((p_type)::text = 'PROMO BURNISHED NICKEL'::text)
+                                 ->  Index Scan using lineitem_l_partkey_l_quantity_l_shipmode_idx on lineitem  (cost=0.57..117.39 rows=32 width=20)
+                                       Index Cond: (l_partkey = part.p_partkey)
+                           ->  Hash  (cost=5166796.51..5166796.51 rows=9028571 width=8)
+                                 ->  Hash Join  (cost=1584352.14..5166796.51 rows=9028571 width=8)
+                                       Hash Cond: (orders.o_custkey = customer.c_custkey)
+                                       ->  Bitmap Heap Scan on orders  (cost=957830.83..4167846.66 rows=45142855 width=12)
+                                             Recheck Cond: ((o_orderdate >= '1995-01-01'::date) AND (o_orderdate <= '1996-12-31'::date))
+                                             ->  Bitmap Index Scan on orders_o_orderdate_o_orderkey_idx  (cost=0.00..946545.12 rows=45142855 width=0)
+                                                   Index Cond: ((o_orderdate >= '1995-01-01'::date) AND (o_orderdate <= '1996-12-31'::date))
+                                       ->  Hash  (cost=589020.65..589020.65 rows=3000052 width=4)
+                                             ->  Hash Join  (cost=2.53..589020.65 rows=3000052 width=4)
+                                                   Hash Cond: (customer.c_nationkey = n1.n_nationkey)
+                                                   ->  Seq Scan on customer  (cost=0.00..502766.62 rows=15000262 width=8)
+                                                   ->  Hash  (cost=2.47..2.47 rows=5 width=4)
+                                                         ->  Hash Join  (cost=1.07..2.47 rows=5 width=4)
+                                                               Hash Cond: (n1.n_regionkey = region.r_regionkey)
+                                                               ->  Seq Scan on nation n1  (cost=0.00..1.25 rows=25 width=8)
+                                                               ->  Hash  (cost=1.06..1.06 rows=1 width=4)
+                                                                     ->  Seq Scan on region  (cost=0.00..1.06 rows=1 width=4)
+                                                                           Filter: (r_name = 'ASIA'::bpchar)
+                     ->  Hash  (cost=31796.00..31796.00 rows=1000000 width=8)
+                           ->  Seq Scan on supplier  (cost=0.00..31796.00 rows=1000000 width=8)
+               ->  Hash  (cost=1.25..1.25 rows=25 width=30)
+                     ->  Seq Scan on nation n2  (cost=0.00..1.25 rows=25 width=30)
+(39 rows)
+
+COMMIT;
+COMMIT

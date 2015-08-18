@@ -1,0 +1,15 @@
+node: ip-10-227-0-12.us-west-1.compute.internal
+kernel: Linux 3.10.0-229.el7.x86_64
+distribution: Red Hat Enterprise Linux Server release 7.1 (Maipo)
+dbver: PostgreSQL 9.5alpha2
+sysstat: 10.1.5
+CPUS: 32
+MHz:  2500.056
+model:  Intel(R) Xeon(R) CPU E5-2670 v2 @ 2.50GHz
+memory:        251459560 kB
+scale_factor: 100
+num_stream: 8
+load_parameters: -c shared_buffers=8GB -c maintenance_work_mem=8GB -c log_checkpoints=on -c log_line_prefix='%t [%p]: [%l-1] user=%u,db=%d,app=%a,client=%h ' -c log_lock_waits=on -c log_temp_files=0 -c effective_cache_size=20GB -c work_mem=8GB
+power_parameters: -c shared_buffers=8GB -c work_mem=512MB -c default_statistics_target=10000 -c log_checkpoints=on -c log_line_prefix='%t [%p]: [%l-1] user=%u,db=%d,app=%a,client=%h ' -c log_lock_waits=on -c log_temp_files=0 -c effective_cache_size=200GB
+throughput_parameters: -c shared_buffers=8GB -c work_mem=512MB -c default_statistics_target=10000 -c log_checkpoints=on -c log_line_prefix='%t [%p]: [%l-1] user=%u,db=%d,app=%a,client=%h ' -c log_lock_waits=on -c log_temp_files=0 -c effective_cache_size=200GB -c work_mem=1GB
+shmmax: 4294967295

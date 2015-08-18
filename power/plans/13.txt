@@ -1,0 +1,41 @@
+BEGIN;
+BEGIN
+EXPLAIN
+select
+	c_count,
+	count(*) as custdist
+from
+	(
+		select
+			c_custkey,
+			count(o_orderkey)
+		from
+			customer left outer join orders on
+				c_custkey = o_custkey
+				and o_comment not like '%pending%deposits%'
+		group by
+			c_custkey
+	) as c_orders (c_custkey, c_count)
+group by
+	c_count
+order by
+	custdist desc,
+	c_count desc;
+                                            QUERY PLAN                                            
+--------------------------------------------------------------------------------------------------
+ Sort  (cost=10855745.61..10855746.11 rows=200 width=8)
+   Sort Key: (count(*)) DESC, (count(orders.o_orderkey)) DESC
+   ->  HashAggregate  (cost=10855735.97..10855737.97 rows=200 width=8)
+         Group Key: count(orders.o_orderkey)
+         ->  HashAggregate  (cost=10480729.42..10630732.04 rows=15000262 width=8)
+               Group Key: customer.c_custkey
+               ->  Hash Right Join  (cost=690269.90..9738303.55 rows=148485173 width=8)
+                     Hash Cond: (orders.o_custkey = customer.c_custkey)
+                     ->  Seq Scan on orders  (cost=0.00..4407872.00 rows=148485173 width=8)
+                           Filter: ((o_comment)::text !~~ '%pending%deposits%'::text)
+                     ->  Hash  (cost=502766.62..502766.62 rows=15000262 width=4)
+                           ->  Seq Scan on customer  (cost=0.00..502766.62 rows=15000262 width=4)
+(12 rows)
+
+COMMIT;
+COMMIT

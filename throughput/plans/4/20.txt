@@ -1,0 +1,67 @@
+BEGIN;
+BEGIN
+EXPLAIN
+select
+	s_name,
+	s_address
+from
+	supplier,
+	nation
+where
+	s_suppkey in (
+		select
+			ps_suppkey
+		from
+			partsupp
+		where
+			ps_partkey in (
+				select
+					p_partkey
+				from
+					part
+				where
+					p_name like 'chartreuse%'
+			)
+			and ps_availqty > (
+				select
+					0.5 * sum(l_quantity)
+				from
+					lineitem
+				where
+					l_partkey = ps_partkey
+					and l_suppkey = ps_suppkey
+					and l_shipdate >= '1997-01-01'
+					and l_shipdate < cast(date '1997-01-01' + interval '1 year' as date)
+			)
+	)
+	and s_nationkey = n_nationkey
+	and n_name = 'JAPAN'
+order by
+	s_name;
+                                                                         QUERY PLAN                                                                         
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=69029214.09..69029314.07 rows=39993 width=52)
+   Sort Key: supplier.s_name
+   ->  Nested Loop Semi Join  (cost=1.43..69026157.13 rows=39993 width=52)
+         ->  Nested Loop  (cost=0.42..62783.10 rows=40000 width=56)
+               Join Filter: (supplier.s_nationkey = nation.n_nationkey)
+               ->  Index Scan using pk_supplier on supplier  (cost=0.42..47781.79 rows=1000000 width=60)
+               ->  Materialize  (cost=0.00..1.32 rows=1 width=4)
+                     ->  Seq Scan on nation  (cost=0.00..1.31 rows=1 width=4)
+                           Filter: (n_name = 'JAPAN'::bpchar)
+         ->  Nested Loop Semi Join  (cost=1.00..10695.62 rows=12 width=4)
+               ->  Index Scan using partsupp_ps_suppkey_idx on partsupp  (cost=0.57..10681.28 rows=27 width=8)
+                     Index Cond: (ps_suppkey = supplier.s_suppkey)
+                     Filter: ((ps_availqty)::double precision > (SubPlan 1))
+                     SubPlan 1
+                       ->  Aggregate  (cost=133.38..133.39 rows=1 width=4)
+                             ->  Index Scan using lineitem_l_partkey_l_quantity_l_shipmode_idx on lineitem  (cost=0.57..133.37 rows=1 width=4)
+                                   Index Cond: (l_partkey = partsupp.ps_partkey)
+                                   Filter: ((l_shipdate >= '1997-01-01'::date) AND (l_shipdate < '1998-01-01'::date) AND (l_suppkey = partsupp.ps_suppkey))
+               ->  Index Scan using pk_part on part  (cost=0.44..0.53 rows=1 width=4)
+                     Index Cond: (p_partkey = partsupp.ps_partkey)
+                     Filter: ((p_name)::text ~~ 'chartreuse%'::text)
+(21 rows)
+
+COMMIT;
+COMMIT
